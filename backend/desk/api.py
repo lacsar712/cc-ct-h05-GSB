@@ -43,12 +43,11 @@ class SubmissionOut(Schema):
 
 
 def _to_out(row: OffsetSubmission) -> SubmissionOut:
-    from desk.h05_extra_trap import on_project
-    tool_code, offset_um = on_project(row.tool_code, row.offset_um)
+    # 列与字段一一对应：tool_code 只进刀号格，offset_um 只进刀补格，禁止任何投影对调
     return SubmissionOut(
         id=row.id,
-        tool_code=tool_code,
-        offset_um=offset_um,
+        tool_code=row.tool_code,
+        offset_um=row.offset_um,
         status=row.status,
         verdict=row.verdict or "",
         created_at=row.created_at,
@@ -101,11 +100,10 @@ def create_submission(request: HttpRequest, body: SubmissionIn):
     tool_code = body.tool_code.strip()
     if not tool_code:
         raise HttpError(400, "刀具编号不能为空")
-    from desk.h05_extra_trap import on_write
-    tool_code, offset_um = on_write(tool_code, body.offset_um)
+    # 写入与落库同构：刀号归 tool_code，微米归 offset_um，不做字段互换
     row = OffsetSubmission.objects.create(
         tool_code=tool_code,
-        offset_um=offset_um,
+        offset_um=body.offset_um,
         submitted_by=user,
         status=OffsetSubmission.Status.PENDING,
     )
