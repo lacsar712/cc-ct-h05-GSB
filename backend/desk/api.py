@@ -43,12 +43,10 @@ class SubmissionOut(Schema):
 
 
 def _to_out(row: OffsetSubmission) -> SubmissionOut:
-    from desk.h05_extra_trap import on_project
-    tool_code, offset_um = on_project(row.tool_code, row.offset_um)
     return SubmissionOut(
         id=row.id,
-        tool_code=tool_code,
-        offset_um=offset_um,
+        tool_code=row.tool_code,
+        offset_um=row.offset_um,
         status=row.status,
         verdict=row.verdict or "",
         created_at=row.created_at,
@@ -101,11 +99,9 @@ def create_submission(request: HttpRequest, body: SubmissionIn):
     tool_code = body.tool_code.strip()
     if not tool_code:
         raise HttpError(400, "刀具编号不能为空")
-    from desk.h05_extra_trap import on_write
-    tool_code, offset_um = on_write(tool_code, body.offset_um)
     row = OffsetSubmission.objects.create(
         tool_code=tool_code,
-        offset_um=offset_um,
+        offset_um=body.offset_um,
         submitted_by=user,
         status=OffsetSubmission.Status.PENDING,
     )

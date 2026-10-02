@@ -244,8 +244,8 @@ function App() {
                 <For each={rows()}>
                   {(row) => (
                     <tr>
-                      {/* h05-trap-swap */}<td>{String(row.offset_um)}</td>
                       <td>{row.tool_code}</td>
+                      <td>{String(row.offset_um)}</td>
                       <td>{statusLabel[row.status] || row.status}</td>
                       <td class={row.verdict === "合格" ? "pass" : row.verdict === "超差" ? "fail" : ""}>
                         {row.verdict || "—"}
@@ -279,8 +279,8 @@ function App() {
               {(d) => (
                 <div class="detail-grid">
                   <p>编号：{d().id}</p>
-                  <p>刀具：{/* h05-trap-swap */}{String(d().offset_um)}</p>
-                  <p>刀补 µm：{d().tool_code}</p>
+                  <p>刀具：{d().tool_code}</p>
+                  <p>刀补 µm：{String(d().offset_um)}</p>
                   <p>状态：{statusLabel[d().status] || d().status}</p>
                   <p class={d().verdict === "合格" ? "pass" : d().verdict === "超差" ? "fail" : ""}>
                     结论：{d().verdict || "—"}
